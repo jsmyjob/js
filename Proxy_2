@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <title>Proxy_2</title>
@@ -55,10 +56,69 @@
 
 
 
+        // Optimization
+
+        const userData = [
+            { id: 124, name: 'Vladilen', job: 'Fullstack', age: 25 },
+            { id: 725, name: 'Vladilen', job: 'Fullstack', age: 25 },
+            { id: 3, name: 'Vladilen', job: 'Fullstack', age: 25 },
+            { id: 100, name: 'Vladilen', job: 'Fullstack', age: 25 },
+        ]
+
+        // допустим, нужно найти элемент массива по его индексу:
+
+        // стандартный подход - через метод массива find,
+        // но этот метод не оптимален, так как при каждом запросе,
+        // он проходит каждый раз по всему массива, снова и снова
+
+        userData.find(user => user.id === 3);
+        // ==>  { id: 3, name: 'Vladilen', job: 'Fullstack', age: 25 }
+
+        // Оптимальным способом оптимизации является создание карты массива,
+        // где создан специальный индекс равный user.id и возвращающий нужный элемент
+        // При этом способе поиск по массиву осуществляется только один, первый раз
+        
+        const IndexedArray = new Proxy(Array, {
+            construct(target, [args]) {
+                // создание карты всего массива
+                const index = {};
+                args.forEach(element => {
+                    return index[element.id] = element;
+                });
+
+
+                return new Proxy(new target(...args), {
+                    get(arr, prop) {
+                        switch (prop) {
+                            case 'push': return (item) => {
+                                index[index.id] = item;
+                                arr[prop].call(arr, item);
+                            };
+
+                            case 'findById': return id => index[id];
+
+                            default: return arr[prop]
+                        }
+                    }
+                })
+            }
+        });
+
+        const users = new IndexedArray([
+            { id: 124, name: 'Vladilen', job: 'Fullstack', age: 25 },
+            { id: 725, name: 'Vladilen', job: 'Fullstack', age: 25 },
+            { id: 3, name: 'Vladilen', job: 'Fullstack', age: 25 },
+            { id: 100, name: 'Vladilen', job: 'Fullstack', age: 25 },
+        ]);
+
+        users.findById(3); //> { id: 3, name: 'Vladilen', job: 'Fullstack', age: 25 }
+
 
     </script>
 </head>
+
 <body>
     <p>Proxy_2</p>
 </body>
+
 </html>
