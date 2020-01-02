@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Proxy_2</title>
+    <script>
+
+
+
+
+        // WRAPPER
+        // добавление дефолтных значений тем ключам, которые не определены в объекте (или отсутствуют)
+
+        const withDefaultValue = (target, defaultValue = 0) => {
+            return new Proxy(target, {
+                get: (obj, prop) => (prop in obj) ? obj[prop] : defaultValue
+            })
+        };
+
+        const position = withDefaultValue({
+            x: 5,
+            y: 10
+        }, 0);
+
+        position.z; // ==> 0
+
+
+        
+
+
+    </script>
+</head>
+<body>
+    <p>Proxy_2</p>
+</body>
+</html>
