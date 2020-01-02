@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Proxy_2</title>
+    <script>
+
+
+        const obj = {
+            name: 'Vladilen',
+            age: 26,
+            job: 'Fullstack'
+        };
+
+        const entries = [
+            ['name', 'Vladilen'],
+            ['age', 26],
+            ['job', 'Fullstack']
+        ];
+
+        // Object.entries(obj): преобразует объект к записи массива
+        console.log(Object.entries(obj));
+
+        /*
+
+        [
+            ['name', 'Vladilen'],
+            ['age', 26],
+            ['job', 'Fullstack']
+        ]
+        
+        */
+
+        // Object.fromEntries(entries): преобразует запись в объект
+        console.log(Object.fromEntries(entries));
+
+        /*
+
+        { 
+            name: "Vladilen", 
+            age: 26, 
+            job: "Fullstack" 
+        }
+
+        */
+
+        const map = new Map(entries);
+
+        console.log(map);
+        // ==> { "name" → "Vladilen", "age" → 26, "job" → "Fullstack" }
+
+        // получение значения по ключу
+        console.log(map.get('job'));
+        // ==> Fullstack
+
+        // Отличие объекта Map от обычного объекта в том,
+        // что в Map в качестве ключа мы можем передавать не только строку,
+        // а вообще что угодно
+
+
+        // метод set(ключ, значение): создает новую запись в мапе и снова возвращает мапу,
+        // поэтому можно чейнить
+        map.set('gender', 'male')
+            .set(obj, 'у этого значения ключ - объект')
+            .set(NaN, "у этого значения ключ - NaN");
+
+        console.log(map);
+        /*
+
+        { 
+            "name" → "Vladilen", 
+            "age" → 26, 
+            "job" → "Fullstack", 
+            "gender" → "male", 
+            {…} → "у этого значения ключ - объект",
+            Nan → "у этого значения ключ - NaN" 
+        }
+
+        */
+
+        console.log(map.get(obj)); // ==> "у этого значения ключ - объект"
+        console.log(map.get(NaN)); // ==> "у этого значения ключ - NaN" 
+
+        // метод delete(key) : удаляет запись по ключу и возвращает true (успех) / false (неудача)
+        map.delete('job'); // ==> true
+
+        // метод has(key) : проверяет наличие ключа в мапе и возвращает true/false
+        map.has('job'); // ==> false
+
+        // СВОЙСТВО size : возвращает размер мапы
+        console.log(map.size); // ==> 5
+
+        // метод clear() : очищает мапу
+        // map.clear();
+        // console.log(map.size); // ==> 0
+
+        //================================
+        // Итерация по мапе
+
+        // метод entries() : возвращает записи мапы в виде записи массивов (как в const entries)
+
+        for (let entry of map.entries()) {
+            console.log(entry)
+        };
+
+        /*
+                [
+                    "name",
+                    "Vladilen"
+                ]
+        
+                [
+                    "age",
+                    26
+                ]
+        
+                [
+                    "gender",
+                    "male"
+                ]
+        
+                [
+                    {
+                        "name": "Vladilen",
+                        "age": 26,
+                        "job": "Fullstack"
+                    },
+                    "у этого значения ключ - объект"
+                ]
+        
+                [
+                    null,
+                    "у этого значения ключ - NaN"
+                ]
+        
+        */
+
+        // Но удобнее проходить по мапе с помощью цикла, где вместо entry используется [key, entry]
+        // Так можно сразу получить записи, а не массивы
+
+        for (let [key, entry] of map.entries()) {
+            console.log(key, entry);
+        }
+
+
+        /*
+            name Vladilen
+            age 26
+            gender male
+            { name: "Vladilen", age: 26, job: "Fullstack" } у этого значения ключ - объект
+            NaN у этого значения ключ - NaN
+        */
+
+
+        // по умолчанию, если вызывается map, то он вызывается с методом entries()
+        // поэтому можно сократить запись вы цикле до 
+        // for (let [key, entry] of map) {
+        //     ...
+        // } 
+
+        // метод values() : возвращает все значения в мапе
+        for (let val of map.values()) {
+            console.log(val);
+        };
+
+        // метод keys() : возвращает все ключи в мапе
+        for (let key of map.keys()) {
+            console.log(key);
+        };
+
+        // метод forEach( callback-функция(ключ, значение, мапа) =>{...} ) : проходит по каждой записи мапы
+        map.forEach((key, value, m) => {
+            console.log(value, key);
+        })
+
+
+        //====================================================== 
+        // Из карты можно получать массив следующими способами:
+
+        // (1) деструктуризация мапы
+        const arr1 = [...map];
+
+        // (2) статический метод класса Array.from(map)
+        const arr2 = Array.from(map);
+
+
+        //========================================================
+        // Так как мапа - это по сути усложненный объект,
+        // то можно получать объекты из мапы
+        // НО НУЖНО УЧИТЫВАТЬ, ЧТО ОБЪЕКТ НЕ МОЖЕТ БЫТЬ КЛЮЧОМ В ДРУГОМ ОБЪЕКТЕ,
+        // ПОЭТОМУ ТАКОЙ КЛЮЧ ПРИВЕДЕТСЯ К Object object
+
+        const mapToObject = Object.fromEntries(map.entries());
+        console.log(mapToObject);
+/*        
+        {
+            "name": "Vladilen",
+            "age": 26,
+            "gender": "male",
+            "[object Object]": "у этого значения ключ - объект",
+            "NaN": "у этого значения ключ - NaN"
+        }
+*/
+
+//===============================================================
+// Пример использования мапы: заполнение мапы временем последнего захода юзера на сайт
+
+const users = [
+    {name: 'Vladilen'},
+    {name: 'Lena'},
+    {name: 'Ivan'}
+];
+
+const visits = new Map();
+
+visits.set(users[0], new Date())
+.set(users[1], new Date(new Date().getTime() + 1000 * 60))
+.set(users[2], new Date(new Date().getTime() + 5000 * 60));
+
+function lastVisit(user) {
+    return visits.get(user);
+};
+
+console.log(lastVisit(users[2]));
+
+// ==> "2020-01-02T15:12:55.288Z"
+
+
+    </script>
+</head>
+
+<body>
+    <p>Proxy_2</p>
+</body>
+
+</html>
