@@ -22,10 +22,38 @@
             y: 10
         }, 0);
 
-        position.z; // ==> 0
+        position.z;
+
+        /*
+        0
+        */
 
 
-        
+
+        // Hidden properties
+        // Функция-обертка, которая скрывает свойства, которое я указываю:
+        // эти свойства будут в объекте, но к ним нельзя будет получить доступ
+        // с помощью оператора точка, key in obj, Object.keys(obj) или через цикл for(let key in obj)
+
+        const withHiddenPropperties = (target, prefix = '_') => {
+            return new Proxy(target, {
+                has: (obj, prop) => (prop in obj) && (!prop.startWith(prefix)),
+                ownKeys: (obj) => Reflect.ownKeys(obj).filter(p => !p.startWith(prefix)),
+                get: (obj, prop, receiver) => (prop in receiver) ? obj[prop] : void 0
+            })
+        };
+
+        const data = withHiddenPropperties({
+            name: 'Ivan',
+            age: 34,
+            _id: 22111
+        });
+
+        data.name; // ==> Ivan
+        data._id; // ==> undefined
+
+
+
 
 
     </script>
